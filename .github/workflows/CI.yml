@@ -37,6 +37,7 @@ jobs:
       - name: Run Go server
         run: |
           cd goServer
+          go mod download github.com/99designs/gqlgen
           go run server.go &
           cd ..
           cargo +nightly run --release
