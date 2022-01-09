@@ -31,12 +31,12 @@ jobs:
       - name: Run Rust server
         run: |
           cd rust-server
-          cargo +nightly run --release
+          cargo +nightly run --release &
           cd ..
           cargo +nightly run --release
       - name: Run Go server
         run: |
           cd goServer
-          go run server.go
+          go run server.go &
           cd ..
           cargo +nightly run --release
