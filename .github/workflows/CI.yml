@@ -23,8 +23,8 @@ jobs:
         run: |
           git clone https://github.com/uselessgoddess/rust-server
           cd rust-server
-          cargo +nightly build --release --verbose
-      - name: Build Rust server
+          cargo +nightly build --release
+      - name: Build Go server
         run: |
           git clone https://github.com/uselessgoddess/goServer
 
@@ -34,7 +34,7 @@ jobs:
           cargo +nightly run --release
           cd ..
           cargo +nightly run --release
-      - name: Run Rust server
+      - name: Run Go server
         run: |
           cd goServer
           go run server.go
