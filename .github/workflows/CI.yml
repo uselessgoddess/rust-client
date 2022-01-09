@@ -37,6 +37,7 @@ jobs:
       - name: Run Go server
         run: |
           cd goServer
+          go env -w GO111MODULE=off
           go mod download github.com/99designs/gqlgen
           go mod download github.com/agnivade/levenshtein
           go get github.com/99designs/gqlgen/graphql/handler/transport@v0.14.0
