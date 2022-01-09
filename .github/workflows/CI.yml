@@ -33,11 +33,11 @@ jobs:
           cd rust-server
           cargo +nightly run --release &
           cd ..
-          cargo +nightly run --release 1234
+          cargo +nightly run --release -- 1234
       - name: Run Go server
         run: |
           cd goServer
           go mod download github.com/99designs/gqlgen
           go run server.go &
           cd ..
-          cargo +nightly run --release 4321
+          cargo +nightly run --release -- 4321
