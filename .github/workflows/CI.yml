@@ -38,6 +38,14 @@ jobs:
         run: |
           cd goServer
           go mod download github.com/99designs/gqlgen
+          go mod download github.com/agnivade/levenshtein
+          go get github.com/99designs/gqlgen/graphql/handler/transport@v0.14.0
+          go get github.com/99designs/gqlgen/graphql/handler/lru@v0.14.0
+          go get github.com/99designs/gqlgen/graphql/handler/extension@v0.14.0
+          go get github.com/99designs/gqlgen/graphql@v0.14.0
+          go get github.com/99designs/gqlgen/graphql/handler@v0.14.0
+          go get github.com/99designs/gqlgen/graphql/executor@v0.14.0
+          go get github.com/99designs/gqlgen/graphql/executor@v0.14.0
           go run server.go &
           cd ..
           cargo +nightly run --release -- 4321
