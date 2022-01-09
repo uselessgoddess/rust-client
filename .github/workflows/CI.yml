@@ -46,6 +46,6 @@ jobs:
           go get github.com/99designs/gqlgen/graphql/handler@v0.14.0
           go get github.com/99designs/gqlgen/graphql/executor@v0.14.0
           go get github.com/99designs/gqlgen/graphql/executor@v0.14.0
-          go run server.go &
+          sudo go run server.go &
           cd ..
           cargo +nightly run --release -- 4321
