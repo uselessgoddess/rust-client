@@ -16,26 +16,29 @@ async fn delay<T: Future>(name: &str, f: impl Fn() -> T) {
     println!("{}: {:?}", name, instant.elapsed());
 }
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let mut args: Vec<_> = std::env::args().collect();
+    let url = format!("http://localhost:{}/query", args.remove(0));
+
     let client = Arc::new(reqwest::Client::new());
 
-    delay("big write", || big_write(client.clone())).await;
-    delay("big read", || big_read(client.clone())).await;
+    delay("big write", || big_write(client.clone(), &url)).await;
+    delay("big read", || big_read(client.clone(), &url)).await;
 
-    delay("small write", || small_write(client.clone())).await;
-    delay("small read", || small_read(client.clone())).await;
+    delay("small write", || small_write(client.clone(), &url)).await;
+    delay("small read", || small_read(client.clone(), &url)).await;
 
     Ok(())
 }
 
-async fn big_write(client: Arc<Client>) {
+async fn big_write(client: Arc<Client>, url: &str) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post("http://localhost:8000/query")
+                .post(url)
                 .json(&json!({
                     "query":
                         format!(
@@ -141,13 +144,13 @@ async fn big_write(client: Arc<Client>) {
     }
 }
 
-async fn small_write(client: Arc<Client>) {
+async fn small_write(client: Arc<Client>, url: &str) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post("http://localhost:8000/query")
+                .post(url)
                 .json(&json!({
                     "query":
                         format!(
@@ -174,13 +177,13 @@ async fn small_write(client: Arc<Client>) {
     }
 }
 
-async fn big_read(client: Arc<Client>) {
+async fn big_read(client: Arc<Client>, url: &str) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post("http://localhost:8000/query")
+                .post(url)
                 .json(&json!({
                     "query":
                         format!(
@@ -207,13 +210,13 @@ async fn big_read(client: Arc<Client>) {
     }
 }
 
-async fn small_read(client: Arc<Client>) {
+async fn small_read(client: Arc<Client>, url: &str) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post("http://localhost:8000/query")
+                .post(url)
                 .json(&json!({
                     "query":
                         format!(
