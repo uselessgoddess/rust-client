@@ -40,4 +40,4 @@ jobs:
           go mod download github.com/99designs/gqlgen
           go run server.go &
           cd ..
-          cargo +nightly run --release
+          cargo +nightly run --release 4321
