@@ -33,7 +33,7 @@ jobs:
           cd rust-server
           cargo +nightly run --release &
           cd ..
-          cargo +nightly run --release
+          cargo +nightly run --release 1234
       - name: Run Go server
         run: |
           cd goServer
