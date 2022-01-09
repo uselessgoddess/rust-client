@@ -10,7 +10,7 @@ use std::time::Instant;
 
 const TASKS: usize = 1000;
 
-async fn delay<T: Future>(name: &str, f: impl Fn() -> T) {
+async fn delay<T: Future>(name: &'static str, f: impl Fn() -> T) {
     let instant = Instant::now();
     let _ = f().await;
     println!("{}: {:?}", name, instant.elapsed());
@@ -23,22 +23,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = Arc::new(reqwest::Client::new());
 
-    delay("big write", || big_write(client.clone(), &url)).await;
-    delay("big read", || big_read(client.clone(), &url)).await;
+    delay("big write", || big_write(client.clone(), url.clone())).await;
+    delay("big read", || big_read(client.clone(), url.clone())).await;
 
-    delay("small write", || small_write(client.clone(), &url)).await;
-    delay("small read", || small_read(client.clone(), &url)).await;
+    delay("small write", || small_write(client.clone(), url.clone())).await;
+    delay("small read", || small_read(client.clone(), url.clone())).await;
 
     Ok(())
 }
 
-async fn big_write(client: Arc<Client>, url: &str) {
+async fn big_write(client: Arc<Client>, url: String) {
     let mut pool = vec![];
     for i in 0..TASKS {
+        let url = url.clone();
         let client = client.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post(url)
+                .post(&url)
                 .json(&json!({
                     "query":
                         format!(
@@ -144,13 +145,14 @@ async fn big_write(client: Arc<Client>, url: &str) {
     }
 }
 
-async fn small_write(client: Arc<Client>, url: &str) {
+async fn small_write(client: Arc<Client>, url: String) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
+        let url = url.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post(url)
+                .post(&url)
                 .json(&json!({
                     "query":
                         format!(
@@ -177,13 +179,14 @@ async fn small_write(client: Arc<Client>, url: &str) {
     }
 }
 
-async fn big_read(client: Arc<Client>, url: &str) {
+async fn big_read(client: Arc<Client>, url: String) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
+        let url = url.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post(url)
+                .post(&url)
                 .json(&json!({
                     "query":
                         format!(
@@ -210,13 +213,14 @@ async fn big_read(client: Arc<Client>, url: &str) {
     }
 }
 
-async fn small_read(client: Arc<Client>, url: &str) {
+async fn small_read(client: Arc<Client>, url: String) {
     let mut pool = vec![];
     for i in 0..TASKS {
         let client = client.clone();
+        let url = url.clone();
         pool.push(tokio::spawn(async move {
             let response = client
-                .post(url)
+                .post(&url)
                 .json(&json!({
                     "query":
                         format!(
