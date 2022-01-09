@@ -19,7 +19,8 @@ async fn delay<T: Future>(name: &'static str, f: impl Fn() -> T) {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let mut args: Vec<_> = std::env::args().collect();
-    let url = format!("http://localhost:{}/query", args.remove(0));
+    let url = format!("http://localhost:{}/query", args.remove(1));
+    println!("{}", url);
 
     let client = Arc::new(reqwest::Client::new());
 
