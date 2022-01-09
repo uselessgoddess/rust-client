@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup nightly Rust
+        run: rustup toolchain install nightly
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Build Rust server
+        run: |
+          git clone https://github.com/uselessgoddess/rust-server
+          cd rust-server
+          cargo +nightly build --release --verbose
+      - name: Build Rust server
+        run: |
+          git clone https://github.com/uselessgoddess/goServer
+
+      - name: Run Rust server
+        run: |
+          cd rust-server
+          cargo +nightly run --release
+          cd ..
+          cargo +nightly run --release
+      - name: Run Rust server
+        run: |
+          cd goServer
+          go run server.go
+          cd ..
+          cargo +nightly run --release
