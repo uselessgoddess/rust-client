@@ -16,7 +16,7 @@ async fn delay<T: Future>(name: &str, f: impl Fn() -> T) {
     println!("{}: {:?}", name, instant.elapsed());
 }
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Arc::new(reqwest::Client::new());
 
