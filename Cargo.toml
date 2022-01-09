@@ -1,0 +1,21 @@
+[package]
+name = "rust-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.async-std]
+version = "1.10.0"
+
+[dependencies.tokio]
+version = "1.15.0"
+features = ["full"]
+
+[dependencies.reqwest]
+version = "0.11.8"
+features = ["json"]
+
+[dependencies.serde_json]
+version = "1.0.74"
+
+[dependencies.actix-web]
+version = "4.0.0-beta.19"
