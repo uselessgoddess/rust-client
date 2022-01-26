@@ -22,8 +22,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let url = format!("http://localhost:{}/query", args.remove(1));
     println!("{}", url);
 
-    tokio::runtime::Handle::try_current();
-
     let client = Arc::new(reqwest::Client::new());
 
     delay("big write", || big_write(client.clone(), url.clone())).await;
