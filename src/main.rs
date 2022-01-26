@@ -7,6 +7,7 @@ use std::future::Future;
 use std::hint::black_box;
 use std::sync::Arc;
 use std::time::Instant;
+use tokio::sync::mpsc;
 
 const TASKS: usize = 1000;
 
@@ -25,20 +26,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Arc::new(reqwest::Client::new());
 
     delay("big write", || big_write(client.clone(), url.clone())).await;
-    delay("big read", || big_read(client.clone(), url.clone())).await;
-
-    delay("small write", || small_write(client.clone(), url.clone())).await;
-    delay("small read", || small_read(client.clone(), url.clone())).await;
+    //delay("big read", || big_read(client.clone(), url.clone())).await;
+    //
+    //delay("small write", || small_write(client.clone(), url.clone())).await;
+    //delay("small read", || small_read(client.clone(), url.clone())).await;
 
     Ok(())
 }
 
 async fn big_write(client: Arc<Client>, url: String) {
-    let mut pool = vec![];
+    let (tx, mut rx) = mpsc::channel(2048);
+
     for i in 0..TASKS {
         let url = url.clone();
         let client = client.clone();
-        pool.push(tokio::spawn(async move {
+        let tx = tx.clone();
+        tokio::spawn(async move {
             let response = client
                 .post(&url)
                 .json(&json!({
@@ -137,15 +140,19 @@ async fn big_write(client: Arc<Client>, url: String) {
                 .await
                 .unwrap();
             let json: Value = response.json().await.unwrap();
-            black_box(json);
-        }));
+            tx.send(json).await.unwrap();
+        });
     }
 
-    for task in pool {
-        task.await.unwrap();
+    let mut count = 0;
+    while let Some(message) = rx.recv().await {
+        count += 1;
+        if count == TASKS {
+            return;
+        }
     }
 }
-
+/*
 async fn small_write(client: Arc<Client>, url: String) {
     let mut pool = vec![];
     for i in 0..TASKS {
@@ -247,3 +254,4 @@ async fn small_read(client: Arc<Client>, url: String) {
         task.await.unwrap();
     }
 }
+*/
